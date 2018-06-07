@@ -83,10 +83,15 @@ class HoverViewStateExpanded extends BaseHoverViewState {
             // an orientation change and we need to update the primary dock position of
             // our tabs.
             if (l1 != l2 || t1 != t2 || r1 != r2 || b1 != b2) {
-                mDock = new Point(
-                        mHoverView.mScreen.getWidth() - ANCHOR_TAB_X_OFFSET_IN_PX,
-                        ANCHOR_TAB_Y_OFFSET_IN_PX
-                );
+                int yDock = (mHoverView.mScreen.getHeight() - mHoverView.mCollapsedDock.position().y < Utils.dpToPx(275))
+                        ? mHoverView.mScreen.getHeight() - Utils.dpToPx(275)
+                        : mHoverView.mCollapsedDock.position().y;
+
+                int xDock = mHoverView.mCollapsedDock.sidePosition().getSide() == SideDock.SidePosition.LEFT
+                        ? mHoverView.mCollapsedDock.position().x + Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP)
+                        : mHoverView.mCollapsedDock.position().x - Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP);
+
+                mDock = new Point(xDock, yDock);
                 mTabChains.get(0).chainTo(mDock);
                 updateChainedPositions();
             }
@@ -110,13 +115,13 @@ class HoverViewStateExpanded extends BaseHoverViewState {
         mHoverView.requestFocus(); // For handling hardware back button presses.
         mHoverView.addOnLayoutChangeListener(mUpdateTabPositionsLayoutListener);
 
-        int yDock = (mHoverView.mScreen.getHeight() - mHoverView.mCollapsedDock.position().y < Utils.dpToPx(250))
-                ? mHoverView.mScreen.getHeight() - Utils.dpToPx(250)
-                : hoverView.mCollapsedDock.position().y;
+        int yDock = (mHoverView.mScreen.getHeight() - mHoverView.mCollapsedDock.position().y < Utils.dpToPx(275))
+                ? mHoverView.mScreen.getHeight() - Utils.dpToPx(275)
+                : mHoverView.mCollapsedDock.position().y;
 
         int xDock = mHoverView.mCollapsedDock.sidePosition().getSide() == SideDock.SidePosition.LEFT
-                ? hoverView.mCollapsedDock.position().x + Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP)
-                : hoverView.mCollapsedDock.position().x - Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP);
+                ? mHoverView.mCollapsedDock.position().x + Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP)
+                : mHoverView.mCollapsedDock.position().x - Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP);
 
         mDock = new Point(xDock, yDock);
         if (null != mHoverView.mMenu) {
