@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Colors for the Hover menu itself -->
-    <color name="hover_navigator_color">#3b3b3b</color>
+    <color name="hover_navigator_color">#FFFFFF</color>
     <color name="hover_shade_color">#00000000</color>
     <color name="arrow_shadow_color">#33000000</color>
 
