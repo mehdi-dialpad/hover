@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:id="@+id/backToCall"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
         android:gravity="center"
-        android:text="This content does not take up the entire screen."
+        android:text="Back to call"
+        android:background="?android:attr/selectableItemBackground"
+        />
+    <TextView
+        android:id="@+id/mute"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Mute"
+        android:background="?android:attr/selectableItemBackground"
+        />
+    <TextView
+        android:id="@+id/speaker"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Speaker"
+        android:background="?android:attr/selectableItemBackground"
+        />
+    <TextView
+        android:id="@+id/endCall"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="End call"
+        android:textColor="@android:color/white"
+        android:background="@drawable/list_bottom_background_red"
+        android:foreground="?android:attr/selectableItemBackground"
         />
 </LinearLayout>

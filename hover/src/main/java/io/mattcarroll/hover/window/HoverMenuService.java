@@ -49,12 +49,16 @@ public abstract class HoverMenuService extends Service {
     private OnExitListener mOnMenuOnExitListener = new OnExitListener() {
         @Override
         public void onExit() {
-            Log.d(TAG, "Menu exit requested. Exiting.");
-            mHoverView.removeFromWindow();
-            onHoverMenuExitingByUserRequest();
-            stopSelf();
+            performExit();
         }
     };
+
+    protected void performExit() {
+        Log.d(TAG, "Menu exit requested. Exiting.");
+        mHoverView.removeFromWindow();
+        onHoverMenuExitingByUserRequest();
+        stopSelf();
+    }
 
     @Override
     public void onCreate() {

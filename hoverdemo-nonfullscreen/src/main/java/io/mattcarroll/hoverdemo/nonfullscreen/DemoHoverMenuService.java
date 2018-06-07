@@ -27,7 +27,7 @@ import io.mattcarroll.hover.window.HoverMenuService;
 /**
  * Demo {@link HoverMenuService}.
  */
-public class DemoHoverMenuService extends HoverMenuService {
+public class DemoHoverMenuService extends HoverMenuService implements MenuClickListener {
 
     private static final String TAG = "DemoHoverMenuService";
 
@@ -58,6 +58,35 @@ public class DemoHoverMenuService extends HoverMenuService {
 
     @NonNull
     private HoverMenu createHoverMenu() {
-        return new DemoHoverMenu(getApplicationContext(), "nonfullscreen");
+        return new DemoHoverMenu(getApplicationContext(), "nonfullscreen", this);
     }
+
+    @Override
+    public void onBackToCall() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        performExit();
+    }
+
+    @Override
+    public void onMute() {
+
+    }
+
+    @Override
+    public void onSpeaker() {
+
+    }
+
+    @Override
+    public void onEndCall() {
+
+    }
+}
+
+interface MenuClickListener {
+    void onBackToCall();
+    void onMute();
+    void onSpeaker();
+    void onEndCall();
 }

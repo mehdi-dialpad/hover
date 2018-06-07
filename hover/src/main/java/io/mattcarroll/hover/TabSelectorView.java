@@ -35,11 +35,13 @@ public class TabSelectorView extends View {
 
     private static final String TAG = "HoverMenuTabSelectorView";
 
-    private static final int DEFAULT_SELECTOR_WIDTH_DP = 24;
-    private static final int DEFAULT_SELECTOR_HEIGHT_DP = 16;
+    private static final int DEFAULT_SELECTOR_WIDTH_DP = 18;
+    private static final int DEFAULT_SELECTOR_HEIGHT_DP = 10;
+    private static final int PADDING_TOP_DP = 2;
 
     private int mSelectorWidthPx;
     private int mSelectorHeightPx;
+    private int mStartTopPx;
     private int mDesiredSelectorCenterLocationPx; // the selector position that the client wants
     private int mLeftMostSelectorLocationPx; // based on mLeftBoundOffset and mSelectorWidthPx;
     private int mRightMostSelectorLocationPx; // based on mRightBoundOffsetPx and mSelectorWidthPx;
@@ -57,13 +59,16 @@ public class TabSelectorView extends View {
     }
 
     private void init() {
+        mStartTopPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, PADDING_TOP_DP, getResources().getDisplayMetrics());
         mSelectorWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_SELECTOR_WIDTH_DP, getResources().getDisplayMetrics());
-        mSelectorHeightPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_SELECTOR_HEIGHT_DP, getResources().getDisplayMetrics());
+        mSelectorHeightPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_SELECTOR_HEIGHT_DP, getResources().getDisplayMetrics()) + mStartTopPx;
         setSelectorPosition(mSelectorWidthPx / 2);
 
         mSelectorPaint = new Paint();
         mSelectorPaint.setColor(getResources().getColor(R.color.hover_navigator_color));
         mSelectorPaint.setStyle(Paint.Style.FILL);
+        mSelectorPaint.setShadowLayer(12, 0, 0, getResources().getColor(R.color.arrow_shadow_color));
+        setLayerType(LAYER_TYPE_SOFTWARE, mSelectorPaint);
     }
 
     public void setSelectorColor(@ColorInt int color) {
@@ -108,10 +113,10 @@ public class TabSelectorView extends View {
         int selectorCenterLocationPx = clampSelectorPosition(mDesiredSelectorCenterLocationPx);
 
         mSelectorPaintPath = new Path();
-        mSelectorPaintPath.moveTo(selectorCenterLocationPx, 0); // top of triangle
+        mSelectorPaintPath.moveTo(selectorCenterLocationPx, mStartTopPx); // top of triangle
         mSelectorPaintPath.lineTo(selectorCenterLocationPx + (mSelectorWidthPx / 2), mSelectorHeightPx); // bottom right of triangle
         mSelectorPaintPath.lineTo(selectorCenterLocationPx - (mSelectorWidthPx / 2), mSelectorHeightPx); // bottom left of triangle
-        mSelectorPaintPath.lineTo(selectorCenterLocationPx, 0); // back to origin
+        mSelectorPaintPath.lineTo(selectorCenterLocationPx, mStartTopPx); // back to origin
 
         invalidate();
     }

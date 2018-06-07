@@ -30,9 +30,11 @@ public class NonFullscreenContent implements Content {
 
     private final Context mContext;
     private View mContent;
+    private MenuClickListener mListener;
 
-    public NonFullscreenContent(@NonNull Context context) {
+    public NonFullscreenContent(@NonNull Context context, MenuClickListener listener) {
         mContext= context.getApplicationContext();
+        mListener = listener;
     }
 
     @NonNull
@@ -44,7 +46,33 @@ public class NonFullscreenContent implements Content {
             // We present our desire to be non-fullscreen by using WRAP_CONTENT for height.  This
             // preference will be honored by the Hover Menu to make our content only as tall as we
             // want to be.
-            mContent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            mContent.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            // Set click listeners
+            mContent.findViewById(R.id.backToCall).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onBackToCall();
+                }
+            });
+            mContent.findViewById(R.id.mute).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onMute();
+                }
+            });
+            mContent.findViewById(R.id.speaker).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onSpeaker();
+                }
+            });
+            mContent.findViewById(R.id.endCall).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onEndCall();
+                }
+            });
         }
         return mContent;
     }

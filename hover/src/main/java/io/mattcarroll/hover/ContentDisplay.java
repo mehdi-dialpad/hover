@@ -23,11 +23,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -63,7 +65,7 @@ class ContentDisplay extends RelativeLayout {
     private final FloatingTab.OnPositionChangeListener mOnTabPositionChangeListener = new FloatingTab.OnPositionChangeListener() {
         @Override
         public void onPositionChange(@NonNull Point position) {
-            Log.d(TAG, mSelectedTab + " tab moved to " + position);
+            Log.d(TAG, mSelectedTab.getTabId() + " tab moved to " + position);
             updateTabSelectorPosition();
 
             setPadding(0, position.y + (mSelectedTab.getTabSize() / 2), 0, 0);
@@ -141,7 +143,7 @@ class ContentDisplay extends RelativeLayout {
         mTabSelectorView.setSelectorPosition(tabPosition.x);
     }
 
-    public void displayContent(@Nullable Content content) {
+    public void displayContent(@Nullable Content content, @SideDock.SidePosition.Side int side) {
         if (content == mContent) {
             // If content hasn't changed then we don't need to do anything.
             return;
@@ -162,6 +164,8 @@ class ContentDisplay extends RelativeLayout {
             } else {
                 wrapContent();
             }
+
+            setContentGravity(side);
         }
     }
 
@@ -179,5 +183,13 @@ class ContentDisplay extends RelativeLayout {
         layoutParams.addRule(ALIGN_PARENT_TOP);
         layoutParams.addRule(ALIGN_PARENT_BOTTOM, 0); // This means "remove rule". Can't use removeRule() until API 17.
         mContainer.setLayoutParams(layoutParams);
+    }
+
+    private void setContentGravity(@SideDock.SidePosition.Side int side) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+        params.gravity = (side == SideDock.SidePosition.RIGHT) ? Gravity.RIGHT : Gravity.LEFT;
+        params.setMargins(Utils.dpToPx(12), 0, Utils.dpToPx(12), 0);
+
+        mContentView.setLayoutParams(params);
     }
 }

@@ -38,13 +38,13 @@ public class DemoHoverMenu extends HoverMenu {
     private final String mMenuId;
     private final Section mSection;
 
-    public DemoHoverMenu(@NonNull Context context, @NonNull String menuId) {
+    public DemoHoverMenu(@NonNull Context context, @NonNull String menuId, MenuClickListener listener) {
         mContext = context.getApplicationContext();
         mMenuId = menuId;
         mSection = new Section(
                 new SectionId("0"),
                 createTabView(),
-                new NonFullscreenContent(context)
+                new NonFullscreenContent(context, listener)
         );
     }
 
@@ -54,7 +54,7 @@ public class DemoHoverMenu extends HoverMenu {
         DemoTabView view = new DemoTabView(
                 mContext,
                 resources.getDrawable(R.drawable.tab_background),
-                resources.getDrawable(R.drawable.ic_orange_circle)
+                resources.getDrawable(R.drawable.dp_logo)
         );
         view.setTabBackgroundColor(0xFFFF9600);
         view.setTabForegroundColor(null);

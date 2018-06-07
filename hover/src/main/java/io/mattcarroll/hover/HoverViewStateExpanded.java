@@ -41,6 +41,7 @@ class HoverViewStateExpanded extends BaseHoverViewState {
     private static final String TAG = "HoverMenuViewStateExpanded";
     private static final int ANCHOR_TAB_X_OFFSET_IN_PX = 100;
     private static final int ANCHOR_TAB_Y_OFFSET_IN_PX = 100;
+    private static final int ANCHOR_TAB_X_OFFSET_IN_DP = 70;
     private static final int TAB_SPACING_IN_PX = 200;
     private static final int TAB_APPEARANCE_DELAY_IN_MS = 100;
 
@@ -63,13 +64,31 @@ class HoverViewStateExpanded extends BaseHoverViewState {
             HoverMenu.Section selectedSection = null != mHoverView.mSelectedSectionId
                     ? mHoverView.mMenu.getSection(mHoverView.mSelectedSectionId)
                     : mHoverView.mMenu.getSection(0);
-            mHoverView.mScreen.getContentDisplay().displayContent(selectedSection.getContent());
+            mHoverView.mScreen.getContentDisplay().displayContent(selectedSection.getContent(),
+                    mHoverView.mCollapsedDock.sidePosition().getSide());
 
             mHoverView.mScreen.getContentDisplay().setVisibility(View.VISIBLE);
 
             mHoverView.notifyListenersExpanded();
             if (null != mListener) {
                 mListener.onExpanded();
+            }
+        }
+    };
+
+    private final View.OnLayoutChangeListener mUpdateTabPositionsLayoutListener = new View.OnLayoutChangeListener() {
+        @Override
+        public void onLayoutChange(View view, int l1, int t1, int r1, int b1, int l2, int t2, int r2, int b2) {
+            // If the containing dimensions of the HoverView have changed then it's probably
+            // an orientation change and we need to update the primary dock position of
+            // our tabs.
+            if (l1 != l2 || t1 != t2 || r1 != r2 || b1 != b2) {
+                mDock = new Point(
+                        mHoverView.mScreen.getWidth() - ANCHOR_TAB_X_OFFSET_IN_PX,
+                        ANCHOR_TAB_Y_OFFSET_IN_PX
+                );
+                mTabChains.get(0).chainTo(mDock);
+                updateChainedPositions();
             }
         }
     };
@@ -89,10 +108,17 @@ class HoverViewStateExpanded extends BaseHoverViewState {
         mHoverView.mState = this;
         mHoverView.makeTouchableInWindow();
         mHoverView.requestFocus(); // For handling hardware back button presses.
-        mDock = new Point(
-                mHoverView.mScreen.getWidth() - ANCHOR_TAB_X_OFFSET_IN_PX,
-                ANCHOR_TAB_Y_OFFSET_IN_PX
-        );
+        mHoverView.addOnLayoutChangeListener(mUpdateTabPositionsLayoutListener);
+
+        int yDock = (mHoverView.mScreen.getHeight() - mHoverView.mCollapsedDock.position().y < Utils.dpToPx(250))
+                ? mHoverView.mScreen.getHeight() - Utils.dpToPx(250)
+                : hoverView.mCollapsedDock.position().y;
+
+        int xDock = mHoverView.mCollapsedDock.sidePosition().getSide() == SideDock.SidePosition.LEFT
+                ? hoverView.mCollapsedDock.position().x + Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP)
+                : hoverView.mCollapsedDock.position().x - Utils.dpToPx(ANCHOR_TAB_X_OFFSET_IN_DP);
+
+        mDock = new Point(xDock, yDock);
         if (null != mHoverView.mMenu) {
             Log.d(TAG, "Already has menu. Expanding.");
             setMenu(mHoverView.mMenu);
@@ -148,7 +174,7 @@ class HoverViewStateExpanded extends BaseHoverViewState {
                 chainedTab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO: is not stable and is crashing.
+                        Log.d(TAG, "Chained tab was tapped: " + chainedTab.getTabId());
                         onTabSelected(chainedTab);
                     }
                 });
@@ -224,8 +250,9 @@ class HoverViewStateExpanded extends BaseHoverViewState {
 
         mHasControl = false;
         mHasMenu = false;
+        mHoverView.removeOnLayoutChangeListener(mUpdateTabPositionsLayoutListener);
         mHoverView.mScreen.getContentDisplay().selectedTabIs(null);
-        mHoverView.mScreen.getContentDisplay().displayContent(null);
+        mHoverView.mScreen.getContentDisplay().displayContent(null, mHoverView.mCollapsedDock.sidePosition().getSide());
         mHoverView.mScreen.getContentDisplay().setVisibility(View.GONE);
         mHoverView.mScreen.getShadeView().hide();
         mHoverView.setState(nextState);
@@ -254,6 +281,8 @@ class HoverViewStateExpanded extends BaseHoverViewState {
         mTabsToUnchainCount = mChainedTabs.size() - 1; // -1 for selected tab
         for (int i = 0; i < mChainedTabs.size(); ++i) {
             final FloatingTab chainedTab = mChainedTabs.get(i);
+            chainedTab.setOnClickListener(null);
+
             final TabChain tabChain = mTabChains.get(i);
 
             if (mSelectedTab != chainedTab) {
@@ -453,7 +482,7 @@ class HoverViewStateExpanded extends BaseHoverViewState {
 
         // Update Section Content if this Section is currently selected.
         if (mHoverView.mSelectedSectionId.equals(mHoverView.mMenu.getSection(sectionIndex).getId())) {
-            mHoverView.mScreen.getContentDisplay().displayContent(section.getContent());
+            mHoverView.mScreen.getContentDisplay().displayContent(section.getContent(), mHoverView.mCollapsedDock.sidePosition().getSide());
         }
     }
 
@@ -528,7 +557,7 @@ class HoverViewStateExpanded extends BaseHoverViewState {
         mSelectedTab = mHoverView.mScreen.getChainedTab(mHoverView.mSelectedSectionId);
         ContentDisplay contentDisplay = mHoverView.mScreen.getContentDisplay();
         contentDisplay.selectedTabIs(mSelectedTab);
-        contentDisplay.displayContent(section.getContent());
+        contentDisplay.displayContent(section.getContent(), mHoverView.mCollapsedDock.sidePosition().getSide());
     }
 
     // TODO: do we need this?

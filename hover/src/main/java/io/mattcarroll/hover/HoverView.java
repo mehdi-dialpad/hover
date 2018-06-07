@@ -25,6 +25,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.RelativeLayout;
 
@@ -174,6 +175,14 @@ public class HoverView extends RelativeLayout {
         restoreVisualState();
         setFocusableInTouchMode(true); // For handling hardware back button presses.
         setState(new HoverViewStateClosed());
+
+        // Close floating tab when clicked outside
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mState.collapse();
+            }
+        });
     }
 
     @Override
