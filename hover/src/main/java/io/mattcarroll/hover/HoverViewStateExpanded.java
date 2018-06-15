@@ -58,20 +58,22 @@ class HoverViewStateExpanded extends BaseHoverViewState {
     private final Runnable mShowTabsRunnable = new Runnable() {
         @Override
         public void run() {
-            mHoverView.mScreen.getShadeView().show();
-            mHoverView.mScreen.getContentDisplay().selectedTabIs(mSelectedTab);
+            if (mHoverView != null) {
+                mHoverView.mScreen.getShadeView().show();
+                mHoverView.mScreen.getContentDisplay().selectedTabIs(mSelectedTab);
 
-            HoverMenu.Section selectedSection = null != mHoverView.mSelectedSectionId
-                    ? mHoverView.mMenu.getSection(mHoverView.mSelectedSectionId)
-                    : mHoverView.mMenu.getSection(0);
-            mHoverView.mScreen.getContentDisplay().displayContent(selectedSection.getContent(),
-                    mHoverView.mCollapsedDock.sidePosition().getSide());
+                HoverMenu.Section selectedSection = null != mHoverView.mSelectedSectionId
+                        ? mHoverView.mMenu.getSection(mHoverView.mSelectedSectionId)
+                        : mHoverView.mMenu.getSection(0);
+                mHoverView.mScreen.getContentDisplay().displayContent(selectedSection.getContent(),
+                        mHoverView.mCollapsedDock.sidePosition().getSide());
 
-            mHoverView.mScreen.getContentDisplay().setVisibility(View.VISIBLE);
+                mHoverView.mScreen.getContentDisplay().setVisibility(View.VISIBLE);
 
-            mHoverView.notifyListenersExpanded();
-            if (null != mListener) {
-                mListener.onExpanded();
+                mHoverView.notifyListenersExpanded();
+                if (null != mListener) {
+                    mListener.onExpanded();
+                }
             }
         }
     };
