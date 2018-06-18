@@ -49,10 +49,11 @@ public class HoverView extends RelativeLayout {
 
     private static final String TAG = "HoverView";
 
-    private static final String PREFS_FILE = "hover";
     private static final String SAVED_STATE_DOCK_POSITION = "_dock_position";
     private static final String SAVED_STATE_DOCKS_SIDE = "_dock_side";
     private static final String SAVED_STATE_SELECTED_SECTION = "_selected_section";
+
+    private SharedPreferences mPrefs;
 
     @NonNull
     public static HoverView createForWindow(@NonNull Context context,
@@ -225,9 +226,24 @@ public class HoverView extends RelativeLayout {
             return;
         }
 
-        SharedPreferences prefs = getContext().getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        PersistentState persistentState = new PersistentState(prefs);
-        persistentState.save(mMenu, mCollapsedDock.sidePosition(), mSelectedSectionId);
+        if (mPrefs == null) {
+            fetchSharedPreferences(new SharedPreferenceTask.TaskInterface() {
+                @Override
+                public void onFinished(SharedPreferences result) {
+                    mPrefs = result;
+                    PersistentState persistentState = new PersistentState(mPrefs);
+                    persistentState.save(mMenu, mCollapsedDock.sidePosition(), mSelectedSectionId);
+                }
+
+                @Override
+                public Context getContext() {
+                    return HoverView.this.getContext();
+                }
+            });
+        } else {
+            PersistentState persistentState = new PersistentState(mPrefs);
+            persistentState.save(mMenu, mCollapsedDock.sidePosition(), mSelectedSectionId);
+        }
     }
 
     void restoreVisualState() {
@@ -236,9 +252,29 @@ public class HoverView extends RelativeLayout {
             return;
         }
 
-        SharedPreferences prefs = getContext().getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        PersistentState persistentState = new PersistentState(prefs);
-        persistentState.restore(this, mMenu);
+        if (mPrefs == null) {
+            fetchSharedPreferences(new SharedPreferenceTask.TaskInterface() {
+                @Override
+                public void onFinished(SharedPreferences result) {
+                    mPrefs = result;
+                    PersistentState persistentState = new PersistentState(mPrefs);
+                    persistentState.restore(HoverView.this, mMenu);
+                }
+
+                @Override
+                public Context getContext() {
+                    return HoverView.this.getContext();
+                }
+            });
+        } else {
+            PersistentState persistentState = new PersistentState(mPrefs);
+            persistentState.restore(this, mMenu);
+        }
+    }
+
+    private void fetchSharedPreferences(SharedPreferenceTask.TaskInterface taskInterface) {
+        SharedPreferenceTask task = new SharedPreferenceTask(taskInterface);
+        task.execute();
     }
 
     // TODO: when to call this?
