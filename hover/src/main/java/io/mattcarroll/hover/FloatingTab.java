@@ -229,14 +229,14 @@ class FloatingTab extends FrameLayout {
             mXAnimation.cancel();
         }
         mXAnimation = ObjectAnimator.ofFloat(this, "x", destinationCornerPosition.x);
-        mXAnimation.setDuration(500);
+        mXAnimation.setDuration(300);
         mXAnimation.setInterpolator(new OvershootInterpolator());
 
         if (null != mYAnimation) {
             mYAnimation.cancel();
         }
         mYAnimation = ObjectAnimator.ofFloat(this, "y", destinationCornerPosition.y);
-        mYAnimation.setDuration(500);
+        mYAnimation.setDuration(300);
         mYAnimation.setInterpolator(new OvershootInterpolator());
 
         AnimatorSet animatorSet = new AnimatorSet();
