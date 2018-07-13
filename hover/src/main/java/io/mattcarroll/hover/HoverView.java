@@ -522,9 +522,13 @@ public class HoverView extends RelativeLayout {
         }
 
         private HoverMenu.SectionId getSelectedSectionId(@NonNull String menuId) {
-            return mPrefs.contains(menuId + SAVED_STATE_SELECTED_SECTION)
-                    ? new HoverMenu.SectionId(mPrefs.getString(menuId + SAVED_STATE_SELECTED_SECTION, null))
-                    : null;
+            if (mPrefs.contains(menuId + SAVED_STATE_SELECTED_SECTION)) {
+                String savedSelection = mPrefs.getString(menuId + SAVED_STATE_SELECTED_SECTION, null);
+                if (savedSelection != null && !savedSelection.isEmpty()) {
+                    return new HoverMenu.SectionId(savedSelection);
+                }
+            }
+            return null;
         }
 
         public void save(@NonNull HoverMenu menu,
