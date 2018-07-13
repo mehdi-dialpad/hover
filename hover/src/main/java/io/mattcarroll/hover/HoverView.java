@@ -521,6 +521,7 @@ public class HoverView extends RelativeLayout {
             );
         }
 
+        @Nullable
         private HoverMenu.SectionId getSelectedSectionId(@NonNull String menuId) {
             if (mPrefs.contains(menuId + SAVED_STATE_SELECTED_SECTION)) {
                 String savedSelection = mPrefs.getString(menuId + SAVED_STATE_SELECTED_SECTION, null);
