@@ -56,6 +56,7 @@ public abstract class HoverMenuService extends Service {
     protected void performExit() {
         Log.d(TAG, "Menu exit requested. Exiting.");
         mHoverView.removeFromWindow();
+        mHoverView.release();
         onHoverMenuExitingByUserRequest();
         stopSelf();
     }
@@ -100,6 +101,7 @@ public abstract class HoverMenuService extends Service {
         Log.d(TAG, "onDestroy()");
         if (mIsRunning) {
             mHoverView.removeFromWindow();
+            mHoverView.release();
             mIsRunning = false;
         }
     }
